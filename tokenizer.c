@@ -108,15 +108,8 @@ char** tokenize(char* str) {
 
 void print_tokens(char** words) {
 	if (words == NULL) return;
-	int ind = 0;
-	while (words[ind] != NULL) {
-		char* word = words[ind];
-		printf("tokens[%d] = \'", ind);
-		for (int i = 0; word[i] != '\0'; i++)
-			printf("%c", word[i]);
-		printf("\'\n");
-		ind++;
-	}
+	for (int ind = 0; words[ind] != NULL; ind++)
+		printf("tokens[%d] = \'%s\'\n", ind, words[ind]);
 	printf("\n");
 }
 
