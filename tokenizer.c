@@ -1,4 +1,3 @@
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <wchar.h>
@@ -20,14 +19,12 @@ int string_length(char* str) {
 int is_valid_character(char c) {
 	int charVal = (int)c;
 	/* 
-	 * Letters -> upper 65-90, lower 97-122
+	 * Letters -> uppercase 65-90, lowercase 97-122
 	 * Numbers -> 48-57
 	 */
-	if ((charVal >= 48 && charVal <= 57) || // Numbers
+	return (charVal >= 48 && charVal <= 57) || // Numbers
 		(charVal >= 65 && charVal <= 90) || // Uppercase letters
-		(charVal >= 97 && charVal <= 122))  // Lowercase letters
-		return 1;
-	return 0;
+		(charVal >= 97 && charVal <= 122);  // Lowercase letters
 }
 
 
@@ -210,4 +207,3 @@ int main() {
 		free_tokens(tokens); // Recalim token memory
 	}
 }
-
