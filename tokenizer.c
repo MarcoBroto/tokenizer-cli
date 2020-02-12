@@ -1,10 +1,12 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <wchar.h>
+#include <locale.h>
 #include "history.h"
 
 #define BUFFER_SIZE 100 // Size of input buffer
-
+static const wchar_t BOMBA = 0x1F4A3; // Unicode of 💣 [bomb]
 
 int string_length(char* str) {
 	if (str == NULL) return -1;
@@ -21,9 +23,11 @@ int is_valid_character(char c) {
 	 * Letters -> upper 65-90, lower 97-122
 	 * Numbers -> 48-57
 	 */
-	if (charVal < 33 || charVal > 126)
-		return 0;
-	return 1;
+	if ((charVal >= 48 && charVal <= 57) || // Numbers
+		(charVal >= 65 && charVal <= 90) || // Uppercase letters
+		(charVal >= 97 && charVal <= 122))  // Lowercase letters
+		return 1;
+	return 0;
 }
 
 
@@ -109,7 +113,7 @@ char** tokenize(char* str) {
 void print_tokens(char** words) {
 	if (words == NULL) return;
 	for (int ind = 0; words[ind] != NULL; ind++)
-		printf("tokens[%d] = \'%s\'\n", ind, words[ind]);
+		printf("[%d] => \'%s\'\n", ind, words[ind]);
 	printf("\n");
 }
 
@@ -130,7 +134,8 @@ void free_tokens(char** words) {
 
 void prompt(char* buffer) {
 	if (buffer == NULL) return;
-	printf("$ ");
+	// printf("$ "); // Standard prompt char
+	wprintf(L"%lc ", BOMBA); // Bomba prompt char
 	fgets(buffer, BUFFER_SIZE, stdin);
 	for (int i = 0; i < BUFFER_SIZE; i++) {
 		if (buffer[i] == '\n')
@@ -139,6 +144,9 @@ void prompt(char* buffer) {
 }
 
 
+/*
+ * Used to parse buffer string to read history accessor string in the form of '!23' where the number is the index of the string in the history
+ */
 int stringToPosInt(char* str) {
 	if (str == NULL) return -1; // No string attached, end program
 	else if ( str[0] == '\0' || str[0] == '0') return -1; // Invalid number, end program
@@ -161,6 +169,7 @@ int stringToPosInt(char* str) {
 
 
 int main() {
+	setlocale(LC_CTYPE, ""); // Unicode setting used for printing bomb char
 	List* history = init_history(); // Stores every string tokenized.
 
 	while (1) { // Run until exit command (Ctrl-C)
@@ -176,6 +185,11 @@ int main() {
 			char* ind_str = extractWord(buffer, 1, find_word_end(buffer, 1)); // Get history number string
 			int ind_val = stringToPosInt(ind_str); // Convert string to number
 			evalStr = get_history(history, ind_val); // Get history index at 'ind_val'
+			if (evalStr == NULL) {
+				printf("Not in History!\n\n");
+				continue;
+			}
+			word_count = count_words(evalStr);
 			isInHistory = 1; // Set flag to prevent storing of history string
 		}
 		
