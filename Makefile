@@ -1,2 +1,4 @@
-tokenizer: tokenizer.c history.c
-	gcc -o tokenizer tokenizer.c history.c
+OBJECTS = tokenizer.c history.c
+
+tokenizer: $(OBJECTS)
+	gcc -o $@ $^
